@@ -96,10 +96,7 @@ public class BaseTest extends OSUtils {
 		driver.manage().window().setSize(new Dimension(1700, 1400));
 		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
-		// return driver;  // without Threadlocal
-		// Set the driver instance for the current thread
-        threadLocalDriver.set(driver);
-		return threadLocalDriver.get();
+		return driver;  // without Threadlocal
 	}
 
 	public String getScreenshot(String testCaseName, WebDriver driver) throws IOException {
@@ -130,7 +127,9 @@ public class BaseTest extends OSUtils {
 	@BeforeMethod(alwaysRun = true)
 	public MainPageActions launchApp() throws IOException {
 		driver = initializeDriver();
-		mainpageactions = new MainPageActions(driver);
+		threadDriver.set(driver); // set threadDriver
+		// mainpageactions = new MainPageActions(driver);
+		mainpageactions = new MainPageActions(threadDriver.get());
 		mainpageactions.goTo();
 		// // Store the WebDriver instance in the ThreadLocal variable
   		// 	threadDriver.set(driver);
