@@ -32,6 +32,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 public class BaseTest extends OSUtils {
 	public WebDriver driver;
 	public MainPageActions mainpageactions;
+	protected ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>(); // declared Threadlocal instance
 
 	private WebDriver initializeDriver() throws IOException {
 
@@ -129,12 +130,18 @@ public class BaseTest extends OSUtils {
 		driver = initializeDriver();
 		mainpageactions = new MainPageActions(driver);
 		mainpageactions.goTo();
+		// Store the WebDriver instance in the ThreadLocal variable
+  		threadDriver.set(driver);
 		return mainpageactions;
 	}
 
 	@AfterMethod(alwaysRun = true)
 	public void tearDown() throws InterruptedException {
-		driver.quit();
+		// driver.quit(); // it's simple version without ThreadLocal
+		// Fetch the WebDriver instance and close it
+		threadDriver.get().quit();
+		// Remove the WebDriver instance from the ThreadLocal variable
+		threadDriver.remove();
 	}
 
 }
